@@ -18,7 +18,6 @@ from tqdm import tqdm
 
 from cgan import GeneratorMLP, DiscriminatorMLP
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
@@ -77,7 +76,7 @@ if __name__ == "__main__":
     generator = GeneratorMLP(n_classes=n_classes,
                              latent_dim=config.z_dim,
                              img_shape=image_shape)
-    discriminator =DiscriminatorMLP(n_classes, img_shape=image_shape)
+    discriminator = DiscriminatorMLP(n_classes, img_shape=image_shape)
     generator.to(device)
     discriminator.to(device)
 
@@ -135,21 +134,22 @@ if __name__ == "__main__":
 
         # log last epoch of training
         writer.add_scalars(main_tag="loss",
-                           tag_scalar_dict= {"D": loss_d.item(),
-                                             "G": loss_g.item()})
-
-
+                           tag_scalar_dict={"D": loss_d.item(),
+                                            "G": loss_g.item()},
+                           global_step=epoch)
 
         img_training = torch.cat((make_grid(img_fake, nrow=1, normalize=True),
                                   make_grid(img_real, nrow=1, normalize=True)),
                                  dim=-1)
-        writer.add_image(tag="training", img_tensor=img_training)
+        writer.add_image(tag="training", img_tensor=img_training,
+                         global_step=epoch)
 
         # generate images per class
         generator.eval()
         img_class = make_grid(generator(z_fixed, label_fixed),
                               nrow=n_classes, normalize=True)
-        writer.add_image(tag="classes", img_tensor=img_class)
+        writer.add_image(tag="classes", img_tensor=img_class,
+                         global_step=epoch)
         save_image(img_class, join(img_path, f"fake_{epoch}.png"))
 
         # chekcpoint models:
