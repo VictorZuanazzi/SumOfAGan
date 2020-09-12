@@ -88,8 +88,8 @@ if __name__ == "__main__":
                  lr=config.lr, betas=(config.b1, config.b2))
     loss_func = nn.BCEWithLogitsLoss()
 
-    z_fixed = torch.randn((n_classes * 10, config.z_dim))
-    label_fixed = torch.arange(n_classes).repeat(10)
+    z_fixed = torch.randn((n_classes * 10, config.z_dim), device=device)
+    label_fixed = torch.arange(n_classes, device=device).repeat(10)
 
     for epoch in range(config.epochs):
         for i, (img_real, label) in enumerate(tqdm(dataloader)):
@@ -108,7 +108,7 @@ if __name__ == "__main__":
             loss_real_d = loss_func(score_real, torch.ones_like(score_real))
 
             # fake images
-            z = torch.randn(size=(b, config.z_dim))
+            z = torch.randn(size=(b, config.z_dim), device=device)
             img_fake = generator(z, label)
             score_fake = discriminator(img_fake.detach(), label)
             loss_fake_d = loss_func(score_fake, torch.zeros_like(score_fake))
@@ -122,7 +122,7 @@ if __name__ == "__main__":
             generator.train()
             opt_g.zero_grad()
 
-            z = torch.randn(size=(b, config.z_dim))
+            z = torch.randn(size=(b, config.z_dim), device=device)
             img_fake = generator(z, label)
             score_fake = discriminator(img_fake, label)
             loss_g = loss_func(score_fake, torch.zeros_like(score_fake))
