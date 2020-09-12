@@ -124,7 +124,7 @@ if __name__ == "__main__":
             z = torch.randn(size=(b, config.z_dim), device=device)
             img_fake = generator(z, label)
             score_fake = discriminator(img_fake, label)
-            loss_g = loss_func(score_fake, torch.zeros_like(score_fake))
+            loss_g = loss_func(score_fake, torch.ones_like(score_fake))
 
             loss_g.backward()
             opt_g.step()
