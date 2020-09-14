@@ -17,6 +17,7 @@ from torchvision.datasets import MNIST
 from tqdm import tqdm
 
 from cgan import GeneratorMLP, DiscriminatorMLP
+from sumutils import save_top_k
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -152,11 +153,15 @@ if __name__ == "__main__":
                          global_step=epoch)
         save_image(img_class, join(img_path, f"fake_{epoch}.png"))
 
-        # chekcpoint models:
-        torch.save(generator.state_dict(),
-                   join(model_path, f"generator_{epoch}.pt"))
-        torch.save(discriminator.state_dict(),
-                   join(model_path, f"discriminator_{epoch}.pt"))
+        # checkpoint models:
+        save_top_k(state_dict={"Generator": generator.state_dict(),
+                               "Discriminator": discriminator.state_dict(),
+                               "Opt_G": opt_g.state_dict(),
+                               "Opt_D": opt_d.state_dict()},
+                   path=model_path,
+                   name=f"models_{epoch}",
+                   k=3)
 
         if config.debug:
             break
+            # pass
